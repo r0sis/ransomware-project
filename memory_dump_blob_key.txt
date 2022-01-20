@@ -1,0 +1,30 @@
+$ xxd ransomware > tmp.txt
+CryptImportKey((HCRYPTPROV)local_68,&DAT_004049fd,0x114,0,0,&local_64);
+
+A BLOB containing an encrypted private key. Key BLOBs provide a way to
+ store keys outside the CSP. Key BLOBs are created by exporting an existing 
+ key from the CSP by calling the CryptExportKey function. Later, the key BLOB 
+ can be imported into a provider (often a different CSP on a different computer)
+  by calling the CryptImportKey function. This creates a key in the CSP that is 
+  a duplicate of the one that was exported.
+
+DAT_004049fd :
+    000029f0: 002e 0065 0078 0065 0000 0000 0006 0200  ...e.x.e........
+    00002a00: 0000 a400 0052 5341 3100 0800 0001 0001  .....RSA1.......
+    00002a10: 0045 bbf4 c243 a77c 252d cd08 98cc 5008  .E...C.|%-....P.
+    00002a20: fd36 f65a 38c9 896f e0bc 32c1 7123 25af  .6.Z8..o..2.q#%.
+    00002a30: e06f 67f7 a4a6 9c75 84e2 b6a5 d9f6 bbfa  .og....u........
+    00002a40: ec4e 50f4 e18b a112 8c53 b5ec ee19 3d89  .NP......S....=.
+    00002a50: 788a 8b7d 0fe7 2010 a8ec 793e 4a62 e42f  x..}.. ...y>Jb./
+    00002a60: 7c6d 6a68 1279 43b3 b3c5 1449 afef acdc  |mjh.yC....I....
+    00002a70: 1ec9 434c 8444 461e 86e8 e8e6 ded9 34a0  ..CL.DF.......4.
+    00002a80: 140f f312 b3f6 e2ed 2911 1fa3 86fd 6b75  ........).....ku
+    00002a90: b317 13ac 9dcc 3b86 7d92 7ac3 b815 cb5f  ......;.}.z...._
+    00002aa0: 12d1 16ee 5bf0 c2a6 5f84 903f 5885 9ac0  ....[..._..?X...
+    00002ab0: 153e c05a 0b50 6401 e8b8 a96e b796 7a78  .>.Z.Pd....n..zx
+    00002ac0: a66b e1ea 729b 3cbb 03f3 b90a 038b 28a6  .k..r.<.......(.
+    00002ad0: 91f2 4853 72a3 fc99 1e94 db20 a431 1caf  ..HSr...... .1..
+    00002ae0: e16d 00a0 df8c 12e8 9bd4 0333 e2e4 027b  .m.........3...{
+    00002af0: e293 3770 8baf 8f4e a0e1 3f15 2478 7293  ..7p...N..?.$xr.
+    00002b00: f6aa 6f5a 4077 bfd4 9321 77d1 777c f935  ..oZ@w...!w.w|.5
+    00002b10: cb00 0000 0000 0000 0000 0000 0000 0000  ................
