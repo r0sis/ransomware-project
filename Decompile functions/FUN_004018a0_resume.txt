@@ -1,0 +1,58 @@
+Debug de FUN_004018a0 :
+
+1. Alloue de l'espace mémoire dans le tas avec GlobalAlloc()
+2. Récupère le chemin de l'exécutable avec GetModuleFileNameA() et le place dans l'espace mémoire.
+3. Compare le chemin de l'exécutable avec "c:\\Windows\\notepad+++.exe"
+
+Si la comparaison échoue :
+	i. Ajout de deux registes de clé dans HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\ avec RegSetValueExA() comme suivant : 
+	      | Name      | Type   | Data                                                       |
+	      |-----------|--------|------------------------------------------------------------|
+	      | decrypt   | REG_SZ | "c:\\Windows\\notepad.exe \"c:\\How To Restore Files.txt\" |
+	      | notepad++ | REG_SZ | "c:\\Windows\\notepad+++.exe"                              |
+	      
+	ii. Copie l'exécutable dans "c:\\Windows\\notepad+++.exe" avec CopyFileA().
+	
+4. Récupération d'un descripteur CSP_1 de type PROV_RSA_FULL avec CryptAcquireContextA().
+Le descripteur comprend la spécification d'un conteneur de clé particulier. Le conteneur de clé par défaut est renvoyé, ou "Microsoft Enhanced Cryptographic Provider v1.0" si celui par défaut échoue.
+
+5. Transfert de la clée publique contenu dans le BLOB vers le CSP_1
+
+6. Récupère un deuxième descripteur CSP_2 de type PROV_RSA_AES avec CryptAcquireContextA(). 
+
+7. Génère une clé AES-256bits dans le descripteur CSP_2
+
+8. Export de la clé contenue dans CSP_2 vers l'espace mémoire d'une manière sécurisée avec CryptExportKey().
+
+9. Chiffrement de la clée contenue dans l'espace mémoire avec la clé contenue dans CSP_1 avec CryptEncrypt() puis destruction de la clé dans CSP_1 et du contexte.
+
+10. Créé le fichier "c:\\Windows\\DECODE.KEY" et place la clé chiffrée contenue dans l'espace mémoire.
+
+11. Appelle de la fonction FUN_00401816 qui renvoie dans local_74 un string en base64. Les 10 premiers caractères sont placés en mémoire à l'adresse 0x004042c9 auquel viennent s'ajouter ".BI_D" déjà présent en mémoire.
+	Ex : local_74   = "lhcQzQwdsVqoOEaF+5CKb1vDF9+42hWRWZuN..."
+	     0x004042c9 = "lhcQzQwdsV.BI_D"
+	    
+12. Récupère la valeur du registre de clé nommé "notepad++" dans  HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime et l'écrit à l'adresse mémoire 
+(mais ça marche pas code retour != 0)
+
+13. Ajoute 
+	      | Name       | Type       | Data                                    |
+	      |------------|------------|-----------------------------------------|
+	      | lhcQzQwdsV | REG_BINARY | [valeur chiffrée dans l'espace mémoire] |
+	      
+14. Nettoie l'espace mémoire en remplissant avec des 0 avec RtlZeroMemory()
+
+15. Ajout de trois registes de clé dans HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\ avec RegSetValueExA() comme suivant : 
+	      | Name                       | Type      | Data |
+	      |----------------------------|-----------|------|
+	      | PromptOnSecureDesktop      | REG_DWORD | 0    |
+	      | EnableLUA                  | REG_DWORD | 0    |
+	      | ConsentPromptBehaviorAdmin | REG_DWORD | 0    |
+	      
+16. Récupère le chemin du terminal Windows avec la variable d'environnement ComSpec avec GetEnvironmentVariableA() pour lancer un shell avec GlobalFree() avec les paramètres suivants : "/c vssadmin delete shadows /all"
+
+17. Création d'un thread qui exécute la fonction FUN_00401eda.
+
+18. Création et affichage de la boite de dialogue qui informe sur la progression du chiffrement des données.
+
+19. Destruction de la clé AES-256bits générée.
