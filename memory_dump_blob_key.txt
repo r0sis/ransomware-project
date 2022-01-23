@@ -1,4 +1,4 @@
-$ xxd ransomware > tmp.txt
+$ xxd ransomware
 CryptImportKey((HCRYPTPROV)local_68,&DAT_004049fd,0x114,0,0,&local_64);
 
 A BLOB containing an encrypted private key. Key BLOBs provide a way to
