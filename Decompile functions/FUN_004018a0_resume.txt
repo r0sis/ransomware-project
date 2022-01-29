@@ -14,15 +14,55 @@ Si la comparaison échoue :
 	ii. Copie l'exécutable dans "c:\\Windows\\notepad+++.exe" avec CopyFileA().
 	
 4. Récupération d'un descripteur CSP_1 de type PROV_RSA_FULL avec CryptAcquireContextA().
-Le descripteur comprend la spécification d'un conteneur de clé particulier. Le conteneur de clé par défaut est renvoyé, ou "Microsoft Enhanced Cryptographic Provider v1.0" si celui par défaut échoue.
 
-5. Transfert de la clée publique contenu dans le BLOB vers le CSP_1
+5. Import de la clée publique (non chiffrée) stockée sous la forme d'un PUBLICKEYBLOB  à l'adresse &DAT_004049fd vers le CSP_1
+
+	typedef struct {
+	    unsigned int SigAlgId;   // The identifier for the signature algorithm
+	    unsigned int HashAlgId;  // The identifier for the hash algorithm
+	    ULONG cbPublicKey;       // The length of the key in bytes.
+	    BYTE PublicKey[1]	      // A variable-length byte array that contains the key value
+	} PublicKeyBlob; 
+
+	Taille : 276 octets (0x114)
+	BLOB extrait de la mémoire (identique pour chaque exécution) : 
+	    0602 0000 00a4 0000 5253 4131 0008 0000 
+	    0100 0100 45bb f4c2 43a7 7c25 2dcd 0898 
+	    cc50 08fd 36f6 5a38 c989 6fe0 bc32 c171 
+	    2325 afe0 6f67 f7a4 a69c 7584 e2b6 a5d9 
+	    f6bb faec 4e50 f4e1 8ba1 128c 53b5 ecee 
+	    193d 8978 8a8b 7d0f e720 10a8 ec79 3e4a 
+	    62e4 2f7c 6d6a 6812 7943 b3b3 c514 49af 
+	    efac dc1e c943 4c84 4446 1e86 e8e8 e6de 
+	    d934 a014 0ff3 12b3 f6e2 ed29 111f a386 
+	    fd6b 75b3 1713 ac9d cc3b 867d 927a c3b8 
+	    15cb 5f12 d116 ee5b f0c2 a65f 8490 3f58 
+	    859a c015 3ec0 5a0b 5064 01e8 b8a9 6eb7 
+	    967a 78a6 6be1 ea72 9b3c bb03 f3b9 0a03 
+	    8b28 a691 f248 5372 a3fc 991e 94db 20a4 
+	    311c afe1 6d00 a0df 8c12 e89b d403 33e2 
+	    e402 7be2 9337 708b af8f 4ea0 e13f 1524 
+	    7872 93f6 aa6f 5a40 77bf d493 2177 d177 
+	    7cf9 35cb
+
 
 6. Récupère un deuxième descripteur CSP_2 de type PROV_RSA_AES avec CryptAcquireContextA(). 
 
-7. Génère une clé AES-256bits dans le descripteur CSP_2
+7. Génère une clé AES-256bits dans le descripteur CSP_2 avec CryptGenKey(). Le descripteur de la clé générée est chargé à l'adresse 0x404B20.	
 
-8. Export de la clé contenue dans CSP_2 vers l'espace mémoire d'une manière sécurisée avec CryptExportKey().
+8. Export de la clé contenue dans CSP_2 vers l'espace mémoire sous la forme d'un PLAINTEXTKEYBLOB avec CryptExportKey().
+
+	typedef struct _PLAINTEXTKEYBLOB {
+	  BLOBHEADER hdr;		// PUBLICKEYSTRUC that indicates BLOB's type & algo key uses.
+	  DWORD      dwKeySize;	// The size, in bytes, of the key material.
+	  BYTE       rgbKeyData[];     // The key material.
+	} PLAINTEXTKEYBLOB, *PPLAINTEXTKEYBLOB;
+	
+	Taille : 
+	BLOB extrait de la mémoire (change à chaque exécution) :
+		0802 0000 1066 0000 2000 0000 DB8D B0B5  
+		F909 7AF1 FE6A 2711 66D8 D054 E3F8 D792  
+		1076 B9E0 B0EB 6426 0308 2F42
 
 9. Chiffrement de la clée contenue dans l'espace mémoire avec la clé contenue dans CSP_1 avec CryptEncrypt() puis destruction de la clé dans CSP_1 et du contexte.
 

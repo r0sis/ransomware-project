@@ -152,7 +152,7 @@ WPARAM FUN_004018a0(void)
 
   DWORD size_pbData = 44;
   /* The CryptExportKey function exports a cryptographic key or a key pair from a cryptographic
-     service provider (CSP) in a secure manner.
+     service provider (CSP) in a secure manner to BLOB in application memory space.
      hKey : A handle to the key to be exported.
      hExpKey : A handle to a cryptographic key of the destination user. 
      dwBlobType = 8 = PLAINTEXTKEYBLOB : Specifies the type of key BLOB to be exported in pbData. 

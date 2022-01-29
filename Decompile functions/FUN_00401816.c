@@ -1,53 +1,52 @@
 undefined8 __fastcall
-//                 extraout_ECX,      extraout_EDX,  current_exec_path,(undefined *)local_74, 256 == 0x100
-FUN_00401816(undefined4 param_1,undefined4 param_2,uint *param_3,undefined *param_4,uint param_5)
+//           0x025e1da8,  0x025e21a8,  0x100 == 256
+FUN_00401816(uint *source,undefined *dest, uint size)
 
 {
-  uint uVar1;
-  uint uVar2;
+  uint dword1;
+  uint dword2;
+
+  uint byte;
   undefined4 in_EAX;
-  uint uVar3;
-  char *pcVar4;
-  char s_004043f6 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-Microsoft Enhanced Cryptographic Provider v1.0"
+  char alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-Microsoft Enhanced Cryptographic Provider v1.0"
   
-  if (param_5 != 0) {
+  if (size != 0) {
 
+    // Calcule 4 caractères à chaque passage
     do {
-      uVar1 = *param_3;
-      uVar3 = uVar1;
+      dword1 = source[0-7]; // charge un dword depuis l'adresse source (0x025e1da8). Ex : dword1 = 1ab917d3
+      dword2 = dword1;   // Ex : dword2 = 1ab917d3
 
-      if ((param_5 < 3) && (uVar3 = uVar1 & 0xffff, param_5 < 2)) {
-        uVar3 = uVar1 & 0xff;
+      if ((size < 3) && (dword2 = dword1 & 0xffff, size < 2)) {
+        dword2 = dword1 & 0xff;
       }
 
-      uVar2 = (uVar3 & 0xff0000) >> 8;
-      uVar1 = uVar2 | (uVar3 & 0xff00) << 8;
-      *param_4 = s_004043f6[(uVar3 << 0x18) >> 0x1a];
-      param_4[1] = s_004043f6[(uVar1 | uVar3 << 0x18) >> 0x14 & 0x3f];
+      byte = dword2[0-1];          // Ex : 1ab917d3 => 1a
+      dword1 = byte | dword2[4-5]; // Ex : 1ab917d3 => 17 => 1a | 17 => dword1 = 1f
+      dest[0] = alphabet[(dword2 << 24) >> 26];  // dest[0] = alphabet[6] = 'G'
+      dest[1] = alphabet[(dword1 | dword2 << 24) >> 20 & 0x3f]; // dest[1] = alphabet[43] = 'r'
 
-      if (param_5 == 1) {
-        param_4[2] = '=';
+      if (size == 1) {
+        dest[2] = '=';
 
 LAB_00401891:
-        pcVar4 = param_4 + 3;
-        param_4 += 4;
-        *pcVar4 = '=';
+        dest[3] = '=';
+        dest += 4;
         break;
       }
-      pcVar4 = param_4 + 3;
-      param_4[2] = s_004043f6[(uVar1 & 0xfc000) >> 0xe];
 
-      if (param_5 == 2) goto LAB_00401891;
+      dest[2] = alphabet[(dword1 & 0xfc000) >> 0xe];
 
-      param_4 += 4;
-      *pcVar4 = s_004043f6[(uVar2 & 0x3f00) >> 8];
-      param_3 = (uint *)((int)param_3 + 3);
-      param_5 -= 3;
-    } while (param_5 != 0);
-    
+      if (size == 2) goto LAB_00401891;
+
+      dest[3] = alphabet[(byte & 0x3f00) >> 8]; //
+      source = (uint *)((int)source + 3);
+      dest += 4;
+      size -= 3;
+    } while (size != 0);
   }
 
-  *param_4 = '\0';
+  dest[0] = '\0';
 
-  return CONCAT44(param_2,in_EAX);
+  return CONCAT44(? + eax);
 }
