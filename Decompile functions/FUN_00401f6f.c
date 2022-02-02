@@ -2,7 +2,7 @@
 /* WARNING: Instruction at (ram,0x00401f9e) overlaps instruction at (ram,0x00401f9a)
     */
 
-// This funtction deals with the access tokens of a function
+// This function deals with the access tokens of a function
 
 BOOL FUN_00401f6f(void)
 
@@ -76,10 +76,47 @@ code_r0x00401f99:
   pcVar1 = (char *)segment(in_GS,(short)register0x00000010 + -4 + unaff_SI);
   *pcVar1 = *pcVar1 + cVar4;
   BVar3 = LookupPrivilegeValueA((LPCSTR)lpSystemName,in_stack_ffffffd8,in_stack_ffffffdc);
+  /*          ******* PARAMETERS ********
+
+    [in, optional] lpSystemName
+
+        A pointer to a null-terminated string that specifies the name of the system on which the privilege name is retrieved. If a null string is specified, the function attempts to find the privilege name on the local system.
+
+    [in] lpName
+
+        A pointer to a null-terminated string that specifies the name of the privilege, as defined in the Winnt.h header file. For example, this parameter could specify the constant, SE_SECURITY_NAME, or its corresponding string, "SeSecurityPrivilege".
+
+    [out] lpLuid
+
+        A pointer to a variable that receives the LUID by which the privilege is known on the system specified by the lpSystemName parameter.
+  */
+
+  /*          ******* RETURN VALUE ********
+  If the function succeeds, the function returns nonzero.
+
+  If the function fails, it returns zero.
+  */
+
   if (BVar3 != 0) {
+    // The AdjustTokenPrivileges function enables or disables privileges in the specified access token. Enabling or disabling privileges in an access token requires TOKEN_ADJUST_PRIVILEGES access.
     BVar3 = AdjustTokenPrivileges
                       (in_stack_ffffffe0,0,(PTOKEN_PRIVILEGES)&stack0xfffffff4,0x10,
                        (PTOKEN_PRIVILEGES)&stack0xfffffff4,(PDWORD)&stack0xfffffff0);
+     /*          ******* PARAMETERS ********
+     [in] TokenHandle
+          A handle to the access token that contains the privileges to be modified. The handle must have TOKEN_ADJUST_PRIVILEGES access to the token. If the PreviousState parameter is not NULL, the handle must also have TOKEN_QUERY access.
+
+     [in] DisableAllPrivileges
+          Specifies whether the function disables all of the token's privileges. If this value is TRUE, the function disables all privileges and ignores the NewState parameter. If it is FALSE, the function modifies privileges based on the information pointed to by the NewState parameter.
+     [in, optional] NewState
+          A pointer to a TOKEN_PRIVILEGES structure that specifies an array of privileges and their attributes. If the DisableAllPrivileges parameter is FALSE, the AdjustTokenPrivileges function enables, disables, or removes these privileges for the token. The following table describes the action taken by the AdjustTokenPrivileges function, based on the privilege attribute.
+     */
+
+    // The AdjustTokenPrivileges function cannot add new privileges to the access token. It can only enable or disable the token's existing privileges.
+
+    /*          ******* RETURN VALUE ********
+    If the function succeeds, the return value is nonzero.
+    */
   }
   return BVar3;
 }
