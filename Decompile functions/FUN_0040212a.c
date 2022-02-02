@@ -32,11 +32,10 @@
 
 /*
 * Fonction semblant sauter à une zone mémoire du programme à executé
-/*
+*/
 void FUN_0040212a(void)
 
 {
-                    /* WARNING: Treating indirect jump as call */
-  (*(code *)0x3604)(); // Saut à la zone mémoire à executée
+  sleep();
   return;
 }
