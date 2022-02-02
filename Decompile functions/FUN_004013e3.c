@@ -61,7 +61,7 @@ void FUN_004013e3(LPCWSTR param_1)
         if (((iVar2 != 0) && (iVar2 = lstrcmpW((LPCWSTR)&DAT_00404054,local_22c), iVar2 != 0)) &&
            (iVar2 = lstrcmpiW(u_windows_004042b1,local_22c), iVar2 != 0)) {
           while (lpString1 = (LPWSTR)GlobalAlloc(0x40,0x18064), lpString1 == (LPWSTR)0x0) {
-            FUN_0040212a();
+            Sleep();
           }
           local_8 = lpString1;
           lstrcatW(lpString1,param_1);
@@ -75,7 +75,7 @@ void FUN_004013e3(LPCWSTR param_1)
           if (100 < DAT_00404b44) {
             local_27c.dwLength = 0x20;
             while (GlobalMemoryStatus((LPMEMORYSTATUS)&local_27c), 0x55 < local_27c.dwMemoryLoad) {
-              FUN_0040212a();
+              Sleep();
             }
           }
           DAT_00404b44 = DAT_00404b44 + 1;

@@ -29,18 +29,18 @@ void FUN_004010e7(LPNETRESOURCEA param_1,int param_2)
     local_14 = 0x4000;
     while (local_8 = (LPCSTR)GlobalAlloc(0x40,0x4000), local_8 == (LPCSTR)0x0) {
       local_28 = (HANDLE)0xc8;
-      FUN_0040212a();
+      Sleep();
     }
     while (local_1c = GlobalAlloc(0x40,local_14), local_1c == (HGLOBAL)0x0) {
       local_28 = (HANDLE)0xc8;
-      FUN_0040212a();
+      Sleep();
     }
     DVar1 = WNetEnumResourceA(local_28,&local_10,local_1c,&local_14);
     if (DVar1 == 0xea) {
       GlobalFree(local_1c);
       while (lpBuffer = GlobalAlloc(0x40,local_14), lpBuffer == (HGLOBAL)0x0) {
         local_28 = (HANDLE)0xc8;
-        FUN_0040212a();
+        Sleep();
       }
       local_10 = 0xffffffff;
       local_1c = lpBuffer;
@@ -65,7 +65,7 @@ void FUN_004010e7(LPNETRESOURCEA param_1,int param_2)
             while (lpWideCharStr = (LPWSTR)GlobalAlloc(0x40,0x18064), lpWideCharStr == (LPWSTR)0x0)
             {
               local_28 = (HANDLE)0xc8;
-              FUN_0040212a();
+              Sleep();
             }
             local_c = lpWideCharStr;
             iVar4 = MultiByteToWideChar(3,0,local_8,-1,lpWideCharStr,0);

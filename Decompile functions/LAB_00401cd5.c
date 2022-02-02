@@ -5,8 +5,8 @@ undefined4 UndefinedFunction_00401cd5(HWND param_1,int param_2,int param_3,int p
   
   if (param_2 == 0x110) {
     DAT_00404b28 = param_1;
-    _DAT_00404b30 = FUN_0040204c();
-    _DAT_00404b34 = FUN_0040204c();
+    _DAT_00404b30 = SetTimer();
+    _DAT_00404b34 = SetTimer();
     FUN_00401676();
   }
   else {
@@ -37,7 +37,7 @@ undefined4 UndefinedFunction_00401cd5(HWND param_1,int param_2,int param_3,int p
       }
       else {
         if ((s__files_files/s_s_ftreads_network_00404000[81] == 'n') && (DAT_00404b44 == 0)) {
-          FUN_0040212a();
+          Sleep();
           if (_DAT_00404b24 == 0) {
             _DAT_00404b24 = 1;
             ShellExecuteA((HWND)0x0,&DAT_0040431f,s_c:\Windows\notepad.exe_"c:\How_T_00404546,

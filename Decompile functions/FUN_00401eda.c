@@ -91,7 +91,7 @@ void FUN_00401eda(void)
 
     auStack556[0] = 1000;
     
-    FUN_0040212a();
+    Sleep();
     
     puVar1 = auStack556;
     unaff_EDI = puVar4;
