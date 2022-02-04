@@ -10,12 +10,15 @@ Si la comparaison échoue :
 	      |-----------|--------|------------------------------------------------------------|
 	      | decrypt   | REG_SZ | "c:\\Windows\\notepad.exe \"c:\\How To Restore Files.txt\" |
 	      | notepad++ | REG_SZ | "c:\\Windows\\notepad+++.exe"                              |
+
 	      
 	ii. Copie l'exécutable dans "c:\\Windows\\notepad+++.exe" avec CopyFileA().
+
+	/!\ Cela dit, ces étapes échouent, si le ransomware n'est pas exécuté avec les droits admin.
 	
 4. Récupération d'un descripteur CSP_1 de type PROV_RSA_FULL avec CryptAcquireContextA().
 
-5. Import de la clée publique (non chiffrée) stockée sous la forme d'un PUBLICKEYBLOB  à l'adresse &DAT_004049fd vers le CSP_1
+5. Import de la clée publique (non chiffrée) stockée sous la forme d'un PUBLICKEYBLOB  à l'adresse &DAT_004049fd vers le CSP_1 (RSA)
 
 	typedef struct {
 	    unsigned int SigAlgId;   // The identifier for the signature algorithm

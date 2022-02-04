@@ -26,15 +26,16 @@ WPARAM FUN_004018a0(void)
         hModule : If this parameter is NULL, retrieves the path of the executable file of the current process
         lpFilename = Pointer to a buffer that receives the fully qualified path of the module
         nSize = size of lpFilename buffer 
-    handle_memory_heap = "C:\\Users\\IEUser\\Documents\\ransomware"
+
+    handle_memory_heap after = "C:\\Users\\IEUser\\Documents\\ransomware"
   */
-  GetModuleFileNameA((HMODULE)0x0,(LPSTR)handle_memory_heap,0x8000); 
+  GetModuleFileNameA(0x0,handle_memory_heap,0x8000); 
 
   /* Compares two character strings. The comparison is not case-sensitive. 
     lpString1 > lpString2 : val_cmp > 0
     lpString1 < lpString2 : val_cmp < 0 
     lpString1 == lpString2 : val_cmp = 0*/
-  val_cmp = lstrcmpiA("c:\\Windows\\notepad+++.exe",(LPCSTR)handle_memory_heap);
+  val_cmp = lstrcmpiA("c:\\Windows\\notepad+++.exe",handle_memory_heap);
 
   // Only enter if handle_memory_heap != "c:\\Windows\\notepad+++.exe"
   if (val_cmp != 0) {
@@ -62,6 +63,11 @@ WPARAM FUN_004018a0(void)
             dwType = 1 = REG_SZ = a string : The type of data pointed to by the lpData parameter. 
             lpData : The data to be stored.
             cbData : The size of the information pointed to by the lpData parameter, in bytes.
+        
+        Return value : If the function succeeds, the return value is ERROR_SUCCESS.
+        If the function fails, the return value is a nonzero error code defined in Winerror.h.
+        
+        CR = 5 = access refused 
         */
         RegSetValueExA(handle_reg_key,"decrypt",0,1,(BYTE *)"c:\\Windows\\notepad.exe \"c:\\How To Restore Files.txt\"",DVar2);
         
@@ -77,6 +83,11 @@ WPARAM FUN_004018a0(void)
             dwType = 1 = REG_SZ = a string : The type of data pointed to by the lpData parameter. 
             lpData = "c:\\Windows\\notepad+++.exe" : The data to be stored.
             cbData : The size of the information pointed to by the lpData parameter, in bytes.
+        
+        Return value : If the function succeeds, the return value is ERROR_SUCCESS.
+        If the function fails, the return value is a nonzero error code defined in Winerror.h.
+        
+        CR = 5 = access refused
         */
         RegSetValueExA(handle_reg_key,"notepad++",0,1,(BYTE *)"c:\\Windows\\notepad+++.exe",DVar2);
         
@@ -88,7 +99,11 @@ WPARAM FUN_004018a0(void)
         /* Copies an existing file to a new file.
             lpExistingFileName : The name of an existing file.
             lpNewFileName : The name of the new file.
-            bFailIfExists
+            bFailIfExists : If this parameter is FALSE and the new file already exists, the function overwrites the existing file and succeeds.
+        
+        Return value : If the function succeeds, the return value is nonzero. If the function fails, the return value is zero. 
+        
+        CR = 0 = Failed
         */
         CopyFileA((LPCSTR)handle_memory_heap,"c:\\Windows\\notepad+++.exe",0);
         

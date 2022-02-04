@@ -40,7 +40,7 @@ undefined4 UndefinedFunction_00401cd5(HWND param_1,int param_2,int param_3,int p
           Sleep();
           if (_DAT_00404b24 == 0) {
             _DAT_00404b24 = 1;
-            ShellExecuteA((HWND)0x0,&DAT_0040431f,s_c:\Windows\notepad.exe_"c:\How_T_00404546,
+            ShellExecuteA((HWND)0x0,&DAT_0040431f,s_c:\Windows\notepad.exe_c:\How_T_00404546,
                           (LPCSTR)0x0,(LPCSTR)0x0,5);
           }
           FUN_00401676();
