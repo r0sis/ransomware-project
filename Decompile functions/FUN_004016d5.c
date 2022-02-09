@@ -1,4 +1,4 @@
-/* Get a shift and build a regex from it for a specific windows device/volume (A:/, ..., F:/)*/
+/* Get a shift and build a regex from it for a specific windows disk drives (A:/, ..., F:/)*/
 void FUN_004016d5(char shift)
 {
   undefined4 local_44;
@@ -19,7 +19,7 @@ void FUN_004016d5(char shift)
     Sleep();
   }
 
-  local_40 = shift + 'A'; // Calculate the volume 
+  local_40 = shift + 'A'; // Calculate the disk drives 
   local_44 = 0x5c3f5c5c; // '\?\\'
   local_3f = 0x2e2a5c3a; // '.*\:'
   local_3b = 0x2a;       // '*'
@@ -50,7 +50,7 @@ void FUN_004016d5(char shift)
   */
   int size = MultiByteToWideChar(0x3a4,0,(LPCSTR)&local_44,-1,handle_memory_heap,0); 
   MultiByteToWideChar(0x3a4,0,(LPCSTR)&local_44,-1,handle_memory_heap,size);
-  // handle_memory_heap now contains the regex of the volume, for instance for F:/ => "\.\.?.\.E.:.\.*...*." 
+  // handle_memory_heap now contains the regex of the disk drives, for instance for F:/ => "\.\.?.\.E.:.\.*...*." 
 
   // Value of DAT_00404b44 before is 0
   DAT_00404b44 = DAT_00404b44 + 1;
