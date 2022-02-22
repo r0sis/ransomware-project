@@ -50,7 +50,7 @@ void FUN_004016d5(char shift)
   */
   int size = MultiByteToWideChar(0x3a4,0,(LPCSTR)&local_44,-1,handle_memory_heap,0); 
   MultiByteToWideChar(0x3a4,0,(LPCSTR)&local_44,-1,handle_memory_heap,size);
-  // handle_memory_heap now contains the regex of the disk drives, for instance for F:/ => "\.\.?.\.E.:.\.*...*." 
+  // handle_memory_heap now contains the regex of the disk drives, for instance for F:/ => "\.\.?.\.F.:.\.*...*." 
 
   // Value of DAT_00404b44 before is 0
   DAT_00404b44 = DAT_00404b44 + 1;
