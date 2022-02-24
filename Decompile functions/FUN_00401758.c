@@ -23,7 +23,7 @@ void FUN_00401758(uint param_1,char *param_2)
     	// On met à jour le contenu des paramètres et de la copie du paramètre 2
       *param_2 = '-'; // On change le premier caractère
       param_1 = -param_1; // On passe sa valeur en négatif
-      param_2 = param_2 + 1; // On lui donne l'adresse suivante
+      param_2++; // On lui donne l'adresse suivante
       pcVar2 = param_2; // On met à jour la copie
     }
     // Boucle sur la valeur du paramètre 1 visant à remplir les cases du paramètre 2
@@ -33,7 +33,7 @@ void FUN_00401758(uint param_1,char *param_2)
       param_1 = param_1 / 10;
     }
     for (; pcVar2 < param_2; pcVar2 = pcVar2 + 1) {
-      param_2 = param_2 + -1; // On met à jour l'adresse du paramètre 2
+      param_2--; // On met à jour l'adresse du paramètre 2
       cVar1 = *param_2; // On copie le premier caractère du paramètre 2
       *param_2 = *pcVar2; // On copie le premier caractère de la copie dans la première case du paramètre 2
       *pcVar2 = cVar1; // On met a jour le premier caractère de la copie avec celui précédemment sauvegardé

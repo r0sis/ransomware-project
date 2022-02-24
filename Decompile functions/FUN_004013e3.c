@@ -72,7 +72,8 @@ void FUN_004013e3(LPCWSTR lpFileName)
 
           // If the filename is not "How To Restore Files.txt" 
           if (ret_value != 0) {
-            FUN_00401000(lpFileName);
+            // Creates "How To Restore Files.txt" at the root of the directory contained in lpFileName
+            FUN_00401000(lpFileName); 
 
             /* Determines the length of the specified string (not including the terminating null character).
                 [in] LPCWSTR lpString : The null-terminated string to be checked.
@@ -80,7 +81,8 @@ void FUN_004013e3(LPCWSTR lpFileName)
                 Return value : The function returns the length of the string, in characters. If lpString is NULL, the function returns 0.
             */
             uVar3 = lstrlenW(lpFindFileData.cFileName);
-
+            
+            // Only file name with length less than 21 are crypted
             // Compares two character strings. The comparison is not case-sensitive.
             if ((uVar3 < 0x15) || (ret_value = lstrcmpiW(".BI_D",(LPCWSTR)(lpFindFileData + uVar3 * 2 + 0x22)), ret_value != 0)) {
               
@@ -94,17 +96,18 @@ void FUN_004013e3(LPCWSTR lpFileName)
               
               // Determines the length of the specified string (not including the terminating null character).
               ret_value = lstrlenW(lpFileName + 0x4010);
-              *(undefined4 *)(lpFileName + ret_value + 0x400d) = 0;
+              *(undefined4 *)(lpFileName + ret_value + 0x400d) = 0; // Terminate the copied string by null char
 
               // Appends one string to another.
-              lstrcatW(lpFileName + 0x4010,local_22c);
-              lstrcatW(lpFileName + 0x8020,lpFileName + 0x4010);
-              lstrcatW(lpFileName + 0x8020, " id-");
+              lstrcatW(lpFileName + 0x4010,local_22c); // file name
+              lstrcatW(lpFileName + 0x8020,lpFileName + 0x4010); // disk device 
+              lstrcatW(lpFileName + 0x8020, " id-"); // 
 
               uVar5 = extraout_ECX;
               uVar6 = extraout_EDX;
 
-              if ((lpFindFileData._0_4_ & 1) != 0) {
+              // If the file is read only (1 == FILE_ATTRIBUTE_READONLY) then change it's attribute to 0x80 (FILE_ATTRIBUTE_NORMAL)
+              if ((lpFindFileData.dwFileAttributes & 1) != 0) {
 
                 /* Sets the attributes for a file or directory. 
                   [in] LPCWSTR lpFileName : The name of the file whose attributes are to be set.
@@ -115,6 +118,7 @@ void FUN_004013e3(LPCWSTR lpFileName)
                 uVar6 = extraout_EDX_00;
               }
 
+              // ex: FUN_00401292( , ,"\\\\?\\C:\\bootmgr")
               FUN_00401292(uVar5,uVar6,lpFileName + 0x4010);
             }
           }
