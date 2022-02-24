@@ -1,5 +1,5 @@
 
-// Creates the file "How To Restore Files.txt" at the root of the given directory
+// Creates the file "How To Restore Files.txt" at the root of a given directory
 // ex: if lpFileName == "\\\\?\\C:\\*.*", it creates "\\\\?\\C:\\How To Restore Files.txt" file
 void FUN_00401000(LPCWSTR lpFileName)
 {
@@ -73,8 +73,17 @@ void FUN_00401000(LPCWSTR lpFileName)
     */
     WriteFile(file, message,length,&local_10,(LPOVERLAPPED)0x0);
 
+    /* Closes an open object handle.
+        [in] HANDLE hObject : A valid handle to an open object.
+
+      Return value : If the function succeeds, the return value is nonzero.
+    */
     CloseHandle(file);
 
+    /* Sets the attributes for a file or directory. 
+      [in] LPCWSTR lpFileName : The name of the file whose attributes are to be set.
+      [in] DWORD dwFileAttributes (0x1 == FILE_ATTRIBUTE_READONLY == A file that is read-only.) : The file attributes to set for the file.
+    */
     SetFileAttributesW(heap,1);
   }
 
