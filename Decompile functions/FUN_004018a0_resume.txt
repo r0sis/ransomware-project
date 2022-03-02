@@ -1,4 +1,4 @@
-Debug de FUN_004018a0 :
+Documentation de FUN_004018a0 :
 
 1. Alloue de l'espace mémoire dans le tas avec GlobalAlloc()
 2. Récupère le chemin de l'exécutable avec GetModuleFileNameA() et le place dans l'espace mémoire.
@@ -10,7 +10,6 @@ Si la comparaison échoue :
 	      |-----------|--------|------------------------------------------------------------|
 	      | decrypt   | REG_SZ | "c:\\Windows\\notepad.exe \"c:\\How To Restore Files.txt\" |
 	      | notepad++ | REG_SZ | "c:\\Windows\\notepad+++.exe"                              |
-
 	      
 	ii. Copie l'exécutable dans "c:\\Windows\\notepad+++.exe" avec CopyFileA().
 
@@ -27,7 +26,7 @@ Si la comparaison échoue :
 	    BYTE PublicKey[1]	      // A variable-length byte array that contains the key value
 	} PublicKeyBlob; 
 
-	Taille : 276 octets (0x114)
+	Taille : 276octets (0x114)
 	BLOB extrait de la mémoire (identique pour chaque exécution) : 
 	    0602 0000 00a4 0000 5253 4131 0008 0000 
 	    0100 0100 45bb f4c2 43a7 7c25 2dcd 0898 
@@ -51,7 +50,7 @@ Si la comparaison échoue :
 
 6. Récupère un deuxième descripteur CSP_2 de type PROV_RSA_AES avec CryptAcquireContextA(). 
 
-7. Génère une clé AES-256bits dans le descripteur CSP_2 avec CryptGenKey(). Le descripteur de la clé générée est chargé à l'adresse 0x404B20.	
+7. Génère une clé AES-256 dans le descripteur CSP_2 avec CryptGenKey(). Le descripteur de la clé générée est chargé à l'adresse 0x404B20.	
 
 8. Export de la clé contenue dans CSP_2 vers l'espace mémoire sous la forme d'un PLAINTEXTKEYBLOB avec CryptExportKey().
 
@@ -93,6 +92,7 @@ Si la comparaison échoue :
 	      | ConsentPromptBehaviorAdmin | REG_DWORD | 0    |
 	      
 16. Récupère le chemin du terminal Windows avec la variable d'environnement ComSpec avec GetEnvironmentVariableA() pour lancer un shell avec GlobalFree() avec les paramètres suivants : "/c vssadmin delete shadows /all"
+Cette commande a pour effet de supprimer toutes les sauvegardes automatiques des fichiers.
 
 17. Création d'un thread qui exécute la fonction FUN_00401eda.
 

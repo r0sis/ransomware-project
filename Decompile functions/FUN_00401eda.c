@@ -26,7 +26,7 @@ void FUN_00401eda(void)
       [in] DWORD dwFlags = 2 = TH32CS_SNAPPROCESS (Includes all processes in the system in the snapshot) : The portions of the system to be included in the snapshot
       [in] DWORD th32ProcessID = 0 (current process) : The process identifier of the process to be included in the snapshot.
     
-    Return value : If the function succeeds, it returns an open handle to the specified snapshot.
+      Return value : If the function succeeds, it returns an open handle to the specified snapshot.
     */
     HANDLE handle_snapshot = CreateToolhelp32Snapshot(2,0,unaff_EDI);
 

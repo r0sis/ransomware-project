@@ -101,9 +101,7 @@ WPARAM FUN_004018a0(void)
             lpNewFileName : The name of the new file.
             bFailIfExists : If this parameter is FALSE and the new file already exists, the function overwrites the existing file and succeeds.
         
-        Return value : If the function succeeds, the return value is nonzero. If the function fails, the return value is zero. 
-        
-        CR = 0 = Failed
+            Return value : If the function succeeds, the return value is nonzero. If the function fails, the return value is zero. 
         */
         CopyFileA((LPCSTR)handle_memory_heap,"c:\\Windows\\notepad+++.exe",0);
         
@@ -120,18 +118,18 @@ WPARAM FUN_004018a0(void)
         dwFlags = 0x10 = CRYPT_DELETEKEYSET : Delete the key container specified by szContainer. 
             If szContainer is NULL, the key container with the default name is deleted. All key pairs in the key container are also destroyed.
   */
-  CryptAcquireContextA((HCRYPTPROV *)&handle_CSP,(LPCSTR)0x0,(LPCSTR)0x0,1,0x10); // Delete key container specified by szContainer
+  CryptAcquireContextA((HCRYPTPROV *)&handle_CSP,(LPCSTR)0x0,(LPCSTR)0x0,PROV_RSA_FULL,CRYPT_DELETEKEYSET); // Delete key container specified by szContainer
 
    /* Acquire a handle to a particular key container within a particular cryptographic service provider (CSP).
   This returned handle is used in calls to CryptoAPI functions that use the selected CSP.
         dwFlags = 0xf0000000 = CRYPT_VERIFYCONTEXT : Flag values.
             This option is intended for applications that are using ephemeral keys, or applications that do not require access to persisted private keys, such as applications that perform only hashing, encryption, and digital signature verification.
   */
-  ret_val = CryptAcquireContextA((HCRYPTPROV *)&handle_CSP,(LPCSTR)0x0,(LPCSTR)0x0,1,0xf0000000);
+  ret_val = CryptAcquireContextA((HCRYPTPROV *)&handle_CSP,(LPCSTR)0x0,(LPCSTR)0x0,PROV_RSA_FULL,CRYPT_VERIFYCONTEXT);
 
   // If CryptAcquireContextA failed
   if (ret_val == 0) {
-    CryptAcquireContextA((HCRYPTPROV *)&handle_CSP,(LPCSTR)0x0,"Microsoft Enhanced Cryptographic Provider v1.0",1,0xf0000000);
+    CryptAcquireContextA((HCRYPTPROV *)&handle_CSP,(LPCSTR)0x0,"Microsoft Enhanced Cryptographic Provider v1.0",PROV_RSA_FULL,CRYPT_VERIFYCONTEXT);
   }
 
   /* The CryptImportKey function transfers a cryptographic key from a key BLOB into a cryptographic service provider (CSP) 
@@ -153,17 +151,17 @@ WPARAM FUN_004018a0(void)
             The RSA public key algorithm is used for all public key operations.
         dwFlags = 0xf0000000 = CRYPT_VERIFYCONTEXT : Flag values.
   */
-  CryptAcquireContextA(&handle_CSP2,(LPCSTR)0x0,(LPCSTR)0x0,0x18,0xf0000000);
+  CryptAcquireContextA(&handle_CSP2,(LPCSTR)0x0,(LPCSTR)0x0,PROV_RSA_AES,CRYPT_VERIFYCONTEXT);
   
   /*The CryptGenKey function generates a random cryptographic session key or a public/private key pair. 
     A handle to the key or key pair is returned in phKey. This handle can then be used as needed with 
     any CryptoAPI function that requires a key handle.
         hProv : A handle to a cryptographic service provider (CSP) created by a call to CryptAcquireContext.
         Algid = 0x6610 = CALG_AES_256 = 256-bit AES block encryption algorithm : An ALG_ID value that identifies the algorithm for which the key is to be generated.
-        dwFlags : Specifies the type of key generated.
+        dwFlags = 1 = CRYPT_EXPORTABLE (If this flag is set, then the key can be transferred out of the CSP into a key BLOB by using the CryptExportKey) : Specifies the type of key generated.
         phKey : Address to which the function copies the handle of the newly generated key. 
   */
-  CryptGenKey(handle_CSP2,0x6610,1,&genKey);
+  CryptGenKey(handle_CSP2,CALG_AES_256,CRYPT_EXPORTABLE,&genKey);
 
   DWORD size_pbData = 44;
   /* The CryptExportKey function exports a cryptographic key or a key pair from a cryptographic
@@ -175,12 +173,12 @@ WPARAM FUN_004018a0(void)
      pbData : A pointer to a buffer that receives the key BLOB data
      pdwDataLen : A pointer to a DWORD value that, on entry, contains the size, in bytes, of the buffer pointed to by the pbData parameter. When the function returns, this value contains the number of bytes stored in the buffer.
   */
-  CryptExportKey(genKey,0,8,0,(BYTE *)handle_memory_heap,&size_pbData);
+  CryptExportKey(genKey,0,PLAINTEXTKEYBLOB,0,(BYTE *)handle_memory_heap,&size_pbData);
 
   size_pbData = 44;
 
   /* The CryptEncrypt function encrypts data.
-        hKey : A handle to the encryption key.
+        hKey : A handle to the encryption key. (CSP)
         hHash : A handle to a hash object
         Final : A Boolean value that specifies whether this is the last section in a series being encrypted.
         dwFlags : The following dwFlags value is defined but reserved for future use.

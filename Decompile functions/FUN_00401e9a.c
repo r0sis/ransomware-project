@@ -6,9 +6,10 @@
 void FUN_00401e9a(void)
 
 {
+  // Retrieves a handle to a control in the specified dialog box.
   GetDlgItem();
+
   SendMessageA();
   SendMessageA();
   return;
 }
-// a vérifier au débuggueur

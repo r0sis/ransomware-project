@@ -11,6 +11,7 @@ undefined8 __fastcall FUN_00401292(undefined4 param_1,undefined4 param_2,LPCWSTR
   undefined4 in_EAX;
   HANDLE hFile;
   HCRYPTKEY dupicatedKey;
+  HCRYPTPROV handle_CSP2;
   DWORD local_1c;
   uint local_18;
   LPVOID startAddMapView;
@@ -90,14 +91,14 @@ undefined8 __fastcall FUN_00401292(undefined4 param_1,undefined4 param_2,LPCWSTR
       if (startAddMapView != (LPVOID)0x0) {
 
         /* The CryptDuplicateKey function makes an exact copy of a key and the state of the key.
-              [in]  HCRYPTKEY hKey : A handle to the key to be duplicated.
+              [in]  HCRYPTKEY hKey : A handle to the key to be duplicated. (CSP of private key) ====> DAT_404B20
               [in]  DWORD *pdwReserved : Reserved for future use and must be NULL.
               [in]  DWORD dwFlags : Reserved for future use and must be zero.
               [out] HCRYPTKEY *phKey : Address of the handle to the duplicated key.
 
             Return value : If the function succeeds, the return value is nonzero (TRUE).
         */
-        CryptDuplicateKey(DAT_00404b20,(DWORD *)0x0,0,&dupicatedKey);
+        CryptDuplicateKey(handle_CSP2,(DWORD *)0x0,0,&dupicatedKey);
 
         plaintext = startAddMapView;
         int i = 0;
@@ -113,8 +114,6 @@ undefined8 __fastcall FUN_00401292(undefined4 param_1,undefined4 param_2,LPCWSTR
               [in, out] BYTE *pbData : A pointer to a buffer that contains the plaintext to be encrypted.
               [in, out] DWORD *pdwDataLen : A pointer to a DWORD value that , on entry, contains the length, in bytes, of the plaintext in the pbData buffer.
               [in] DWORD dwBufLen : Specifies the total size, in bytes, of the input pbData buffer.
-
-              Return value : 
           */
           CryptEncrypt(dupicatedKey,0,0,0,(BYTE *)plaintext[i * 0x20],&local_1c,0x20);
           

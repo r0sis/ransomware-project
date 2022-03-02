@@ -1,3 +1,5 @@
+/*  */
+
 undefined8 __fastcall
 //           0x025e1da8,  0x025e21a8,  0x100 == 256
 FUN_00401816(uint *source,undefined *dest, uint size)
