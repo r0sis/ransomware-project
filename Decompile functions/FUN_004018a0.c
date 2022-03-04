@@ -139,7 +139,7 @@ WPARAM FUN_004018a0(void)
     hPubKey : A handle to the cryptographic key that decrypts the key stored in pbData. If the key BLOB is not encrypted (for example, a PUBLICKEYBLOB), then this parameter is not used, and should be zero.
     dwFlags : Currently used only when a public/private key pair in the form of a PRIVATEKEYBLOB is imported into the CSP.
     phKey : A pointer to a HCRYPTKEY value that receives the handle of the imported key.
-
+handle_enc_key
     The key BLOB is a PUBLICKEYBLOB.
   */
   CryptImportKey((HCRYPTPROV)handle_CSP,&DAT_004049fd,0x114,0,0,&handle_enc_key);
