@@ -62,9 +62,14 @@ Si la comparaison échoue :
 	
 	Taille : 
 	BLOB extrait de la mémoire (change à chaque exécution) :
-		0802 0000 1066 0000 2000 0000 DB8D B0B5  
-		F909 7AF1 FE6A 2711 66D8 D054 E3F8 D792  
-		1076 B9E0 B0EB 6426 0308 2F42
+		02521DA8  08 02 00 00 10 66 00 00 20 00 00 00 35 D1 44 B3  .....f.. ...5ÑD³  
+		02521DB8  76 F4 13 B2 53 2D 2F B5 EB 9E 96 6A 65 42 E1 71  vô.²S-/µë..jeBáq  
+		02521DC8  3B 13 90 1E AC AD 2E 55 BE D6 9D 94 00 00 00 00  ;...¬..U¾Ö......
+		
+		02571DA8  08 02 00 00 10 66 00 00 20 00 00 00 38 AC 6F 02  .....f.. ...8¬o.  
+		02571DB8  41 E0 E0 F3 D1 F7 A4 46 43 1A 3E 32 2A 71 5C 9F  AààóÑ÷¤FC.>2*q\.  
+		02571DC8  D9 86 DC AA 18 D1 0F D0 A9 BF 5A 72 00 00 00 00  Ù.Üª.Ñ.Ð©¿Zr....   
+
 
 9. Chiffrement de la clée contenue dans l'espace mémoire avec la clé contenue dans CSP_1 avec CryptEncrypt() puis destruction de la clé dans CSP_1 et du contexte.
 
